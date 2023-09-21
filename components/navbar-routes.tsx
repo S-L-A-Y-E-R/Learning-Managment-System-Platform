@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { isTeacher } from "@/lib/teacher";
 
 import { SearchInput } from "./search-input";
+import { ModeToggle } from "./toggle-theme";
 
 export const NavbarRoutes = () => {
     const { userId } = useAuth();
@@ -26,6 +27,7 @@ export const NavbarRoutes = () => {
                 </div>
             )}
             <div className="flex gap-x-2 ml-auto">
+                <ModeToggle />
                 {isTeacherPage || isCoursePage ? (
                     <Link href="/">
                         <Button size="sm" variant="ghost">

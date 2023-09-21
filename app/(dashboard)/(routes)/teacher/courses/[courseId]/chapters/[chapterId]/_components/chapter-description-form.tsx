@@ -64,7 +64,7 @@ export const ChapterDescriptionForm = ({
   }
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
+    <div className="mt-6 border dark:bg-slate-900 bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Chapter description
         <Button onClick={toggleEdit} variant="ghost">

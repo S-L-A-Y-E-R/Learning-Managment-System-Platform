@@ -75,7 +75,7 @@ export const ChaptersList = ({
                                 {(provided) => (
                                     <div
                                         className={cn(
-                                            "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm",
+                                            "flex items-center gap-x-2 dark:bg-slate-300 dark:text-slate-900  bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm",
                                             chapter.isPublished && "bg-sky-100 border-sky-200 text-sky-700"
                                         )}
                                         ref={provided.innerRef}
@@ -101,8 +101,8 @@ export const ChaptersList = ({
                                             )}
                                             <Badge
                                                 className={cn(
-                                                    "bg-slate-500",
-                                                    chapter.isPublished && "bg-sky-700"
+                                                    "bg-slate-500  dark:text-white ",
+                                                    chapter.isPublished && "bg-sky-700 dark:hover:text-sky-700 "
                                                 )}
                                             >
                                                 {chapter.isPublished ? "Published" : "Draft"}

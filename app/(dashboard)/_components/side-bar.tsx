@@ -2,7 +2,7 @@ import Logo from "./logo";
 import SidebarRoutes from "./sidebar-routes";
 const Sidebar = () => {
     return (
-        <div className="h-full border-r flex flex-col overflow-auto bg-white shadow-sm">
+        <div className="h-full border-r flex flex-col overflow-auto  shadow-sm">
             <div className="p-6">
                 <Logo />
             </div>
