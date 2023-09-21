@@ -34,14 +34,21 @@ export const NavbarRoutes = () => {
                             <LogOut className="h-4 w-4 mr-2" />
                             Exit
                         </Button>
-                    </Link>
-                ) : isTeacher(userId) ? (
-                    <Link href="/teacher/courses">
-                        <Button size="sm" variant="ghost">
-                            Teacher mode
-                        </Button>
-                    </Link>
-                ) : null}
+                    </Link>) :
+                    // ) : isTeacher(userId) ? (
+                    //     <Link href="/teacher/courses">
+                    //         <Button size="sm" variant="ghost">
+                    //             Teacher mode
+                    //         </Button>
+                    //     </Link>
+                    // ) : null
+                    (
+                        <Link href="/teacher/courses">
+                            <Button size="sm" variant="ghost">
+                                Teacher mode
+                            </Button>
+                        </Link>
+                    )}
                 <UserButton
                     afterSignOutUrl="/"
                 />
