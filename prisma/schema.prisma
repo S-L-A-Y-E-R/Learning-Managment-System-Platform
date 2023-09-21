@@ -1,7 +1,7 @@
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") 
-  directUrl = env("POSTGRES_URL_NON_POOLING") 
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 generator client {
@@ -12,7 +12,7 @@ generator client {
 model Course {
   id          String  @id @default(uuid())
   userId      String
-  title       String  @db.Text
+  title       String  @db.Text 
   description String? @db.Text
   imageUrl    String? @db.Text
   price       Float?
@@ -29,7 +29,6 @@ model Course {
   updatedAt DateTime @updatedAt
 
   @@index([categoryId])
-  // @@fulltext([title])
 }
 
 model Category {
