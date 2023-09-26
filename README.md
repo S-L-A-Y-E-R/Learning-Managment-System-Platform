@@ -9,7 +9,7 @@ The student can explore the differnt categories to buy enroll and watch courses.
 
 ### Technologies
 
-[![My Skills](https://skillicons.dev/icons?i=html,css,tailwind,js,ts,react,next)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=html,css,tailwind,js,ts,react,next,vercel,prisma)](https://skillicons.dev)
 
 ## Features:
 
