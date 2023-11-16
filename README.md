@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Project Title
 
-## Getting Started
+Learning Managment System Platform
 
-First, run the development server:
+## Introduction
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun run dev
+This is a platform in which the teacher can adjust his courses to be viewed and can also see the analysis of the revenue through a graph.
+The student can explore the differnt categories to buy enroll and watch courses.
+
+### Technologies
+
+[![My Skills](https://skillicons.dev/icons?i=html,css,tailwind,js,ts,react,next,vercel,prisma)](https://skillicons.dev)
+
+## Features:
+
+-The app is using the following supporting packages to enhance the user experience:
+
+* Clerk for authentication.
+* Shadcn UI for the styled components.
+* ZOD for form validation.
+* Axios for fetching the data.
+* React hot toast for pop up masseges.
+* Prisma as database toolkit.
+* UploadThing for hosting photos&videos.
+* React drag and drop.
+* react quill as text editor provider.
+* Mux for previewing and showing assests of the videos.
+* Zustand for managing the global state.
+* React confetti for dropping the confetti.
+* Query string to add a query to the API url.
+* React-icons.
+* Radix ui react progress for dealing with pogress bar.
+* Recharts to add chart in analytics.
+
+### Installing
+
+Clone the repo and run this command in the terminal to install the dependecies:
+
+```
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+To run the project:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Live demo
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+You can visit the website through [this link](https://learning-managment-system-platform.vercel.app/)
