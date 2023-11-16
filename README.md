@@ -9,7 +9,7 @@ The student can explore the differnt categories to buy enroll and watch courses.
 
 ### Technologies
 
-[![My Skills](https://skillicons.dev/icons?i=html,css,tailwind,js,ts,react,next,vercel,prisma)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=tailwind,ts,react,next,vercel)](https://skillicons.dev)
 
 ## Features:
 
@@ -20,7 +20,6 @@ The student can explore the differnt categories to buy enroll and watch courses.
 * ZOD for form validation.
 * Axios for fetching the data.
 * React hot toast for pop up masseges.
-* Prisma as database toolkit.
 * UploadThing for hosting photos&videos.
 * React drag and drop.
 * react quill as text editor provider.
@@ -38,6 +37,24 @@ Clone the repo and run this command in the terminal to install the dependecies:
 
 ```
 npm install
+```
+
+Add these to you env variables:
+
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+MUX_TOKEN_ID=
+MUX_TOKEN_SECRET=
+
+NEXT_PUBLIC_TEACHER_ID=
+
+API_URL=
 ```
 
 To run the project:
