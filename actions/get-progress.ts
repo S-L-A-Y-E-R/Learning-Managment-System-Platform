@@ -1,37 +1,34 @@
-import { db } from "@/lib/db";
+import axios from "axios";
 
 export const getProgress = async (
   userId: string,
-  courseId: string,
+  courseId: string
 ): Promise<number> => {
   try {
-    const publishedChapters = await db.chapter.findMany({
-      where: {
-        courseId: courseId,
-        isPublished: true,
-      },
-      select: {
-        id: true,
-      }
-    });
+    const { data } = await axios.get(
+      `${process.env.API_URL}api/v1/chapters?courseId=${courseId}&isPublished=true`
+    );
 
-    const publishedChapterIds = publishedChapters.map((chapter) => chapter.id);
+    const publishedChapterIds = data.data.map((chapter: any) => chapter._id);
 
-    const validCompletedChapters = await db.userProgress.count({
-      where: {
-        userId: userId,
-        chapterId: {
-          in: publishedChapterIds,
-        },
-        isCompleted: true,
-      }
-    });
+    const overAllProgress = await axios.get(
+      `${process.env.API_URL}api/v1/progress?userId=${userId}`
+    );
 
-    const progressPercentage = (validCompletedChapters / publishedChapterIds.length) * 100;
+    let validCompletedChapters = 0;
+
+    overAllProgress.data.data.map(
+      (progress: any) =>
+        publishedChapterIds.includes(progress.chapterId) &&
+        validCompletedChapters++
+    );
+
+    const progressPercentage =
+      (validCompletedChapters / publishedChapterIds.length) * 100;
 
     return progressPercentage;
   } catch (error) {
     console.log("[GET_PROGRESS]", error);
     return 0;
   }
-}
+};

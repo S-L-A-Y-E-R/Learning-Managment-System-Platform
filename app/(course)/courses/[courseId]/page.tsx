@@ -1,32 +1,22 @@
-import { db } from "@/lib/db";
+import axios from "axios";
 import { redirect } from "next/navigation";
 
-const CourseIdPage = async ({
-  params
-}: {
-  params: { courseId: string; }
-}) => {
-  const course = await db.course.findUnique({
-    where: {
-      id: params.courseId,
-    },
-    include: {
-      chapters: {
-        where: {
-          isPublished: true,
-        },
-        orderBy: {
-          position: "asc"
-        }
-      }
-    }
-  });
+const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
+  const { data } = await axios.get(
+    `${process.env.API_URL}api/v1/courses/${params.courseId}`
+  );
 
-  if (!course) {
+  if (!data.data.data) {
     return redirect("/");
   }
 
-  return redirect(`/courses/${course.id}/chapters/${course.chapters[0].id}`);
-}
- 
+  const chapters = await axios.get(
+    `${process.env.API_URL}api/v1/chapters?courseId=${params.courseId}&&isPublished=true`
+  );
+
+  return redirect(
+    `/courses/${data.data.data._id}/chapters/${chapters.data.data[0]._id}`
+  );
+};
+
 export default CourseIdPage;

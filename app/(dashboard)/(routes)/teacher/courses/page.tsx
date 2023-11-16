@@ -1,32 +1,27 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-import { db } from "@/lib/db";
+import axios from "axios";
 
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 
 const CoursesPage = async () => {
-    const { userId } = auth();
+  const { userId } = auth();
 
-    if (!userId) {
-        return redirect("/");
-    }
+  if (!userId) {
+    return redirect("/");
+  }
 
-    const courses = await db.course.findMany({
-        where: {
-            userId,
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
-    });
+  const { data: courses } = await axios.get(
+    `${process.env.API_URL}api/v1/courses?userId=${userId}`
+  );
 
-    return (
-        <div className="p-6">
-            <DataTable columns={columns} data={courses} />
-        </div>
-    );
-}
+  return (
+    <div className="p-6">
+      <DataTable columns={columns} data={courses.data} />
+    </div>
+  );
+};
 
 export default CoursesPage;

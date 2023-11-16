@@ -14,13 +14,15 @@ interface CourseProgressButtonProps {
   courseId: string;
   isCompleted?: boolean;
   nextChapterId?: string;
-};
+  userId: string;
+}
 
 export const CourseProgressButton = ({
   chapterId,
   courseId,
   isCompleted,
-  nextChapterId
+  nextChapterId,
+  userId,
 }: CourseProgressButtonProps) => {
   const router = useRouter();
   const confetti = useConfettiStore();
@@ -30,8 +32,10 @@ export const CourseProgressButton = ({
     try {
       setIsLoading(true);
 
-      await axios.put(`/api/courses/${courseId}/chapters/${chapterId}/progress`, {
-        isCompleted: !isCompleted
+      await await axios.post(`${process.env.API_URL}api/v1/progress`, {
+        userId,
+        chapterId,
+        isCompleted: !isCompleted,
       });
 
       if (!isCompleted && !nextChapterId) {
@@ -49,9 +53,9 @@ export const CourseProgressButton = ({
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  const Icon = isCompleted ? XCircle : CheckCircle
+  const Icon = isCompleted ? XCircle : CheckCircle;
 
   return (
     <Button
@@ -64,5 +68,5 @@ export const CourseProgressButton = ({
       {isCompleted ? "Not completed" : "Mark as complete"}
       <Icon className="h-4 w-4 ml-2" />
     </Button>
-  )
-}
+  );
+};

@@ -1,65 +1,39 @@
-import { Category, Course } from "@prisma/client";
+import axios from "axios";
 
 import { getProgress } from "@/actions/get-progress";
-import { db } from "@/lib/db";
-
-type CourseWithProgressWithCategory = Course & {
-  category: Category | null;
-  chapters: { id: string }[];
-  progress: number | null;
-};
-
-type GetCourses = {
-  userId: string;
-  title?: string;
-  categoryId?: string;
-};
 
 export const getCourses = async ({
   userId,
-  title,
-  categoryId
-}: GetCourses): Promise<CourseWithProgressWithCategory[]> => {
+  ...searchParams
+}: {
+  userId: string;
+  category: string;
+  title: string;
+}): Promise<any[]> => {
   try {
-    const courses = await db.course.findMany({
-      where: {
-        isPublished: true,
-        title: {
-          contains: title,
-        },
-        categoryId,
-      },
-      include: {
-        category: true,
-        chapters: {
-          where: {
-            isPublished: true,
-          },
-          select: {
-            id: true,
-          }
-        },
-        purchases: {
-          where: {
-            userId,
-          }
-        }
-      },
-      orderBy: {
-        createdAt: "desc",
-      }
-    });
+    // console.log(searchParams);
 
-    const coursesWithProgress: CourseWithProgressWithCategory[] = await Promise.all(
-      courses.map(async course => {
+    const { data: courses } = await axios.get(
+      `${process.env.API_URL}api/v1/courses?${Object.keys(searchParams)
+        .map(
+          (searchParam: string) =>
+            `${searchParam}=${
+              searchParams[searchParam as keyof typeof searchParams]
+            }`
+        )
+        .join(`&`)}`
+    );
+
+    const coursesWithProgress: any[] = await Promise.all(
+      courses.data.map(async (course: any) => {
         if (course.purchases.length === 0) {
           return {
             ...course,
             progress: null,
-          }
+          };
         }
 
-        const progressPercentage = await getProgress(userId, course.id);
+        const progressPercentage = await getProgress(userId, course._id);
 
         return {
           ...course,
@@ -67,10 +41,11 @@ export const getCourses = async ({
         };
       })
     );
+    // console.log(coursesWithProgress);
 
     return coursesWithProgress;
   } catch (error) {
     console.log("[GET_COURSES]", error);
     return [];
   }
-}
+};

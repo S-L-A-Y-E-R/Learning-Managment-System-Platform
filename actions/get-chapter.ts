@@ -1,11 +1,10 @@
-import { db } from "@/lib/db";
-import { Attachment, Chapter } from "@prisma/client";
+import axios from "axios";
 
 interface GetChapterProps {
   userId: string;
   courseId: string;
   chapterId: string;
-};
+}
 
 export const getChapter = async ({
   userId,
@@ -13,97 +12,74 @@ export const getChapter = async ({
   chapterId,
 }: GetChapterProps) => {
   try {
-    const purchase = await db.purchase.findUnique({
-      where: {
-        userId_courseId: {
-          userId,
-          courseId,
-        }
-      }
-    });
+    const purchase = await axios.get(
+      `${process.env.API_URL}api/v1/purchase?userId=${userId}&courseId=${courseId}`
+    );
 
-    const course = await db.course.findUnique({
-      where: {
-        isPublished: true,
-        id: courseId,
-      },
-      select: {
-        price: true,
-      }
-    });
+    const course = await axios.get(
+      `${process.env.API_URL}api/v1/courses/${courseId}?isPublished=true`
+    );
 
-    const chapter = await db.chapter.findUnique({
-      where: {
-        id: chapterId,
-        isPublished: true,
-      }
-    });
+    const chapter = await axios.get(
+      `${process.env.API_URL}api/v1/chapters/${chapterId}?isPublished=true`
+    );
 
-    if (!chapter || !course) {
+    if (!chapter.data.data.data || !course.data.data.data) {
       throw new Error("Chapter or course not found");
     }
 
     let muxData = null;
-    let attachments: Attachment[] = [];
-    let nextChapter: Chapter | null = null;
+    let attachments = null;
+    let nextChapter = null;
+    // console.log(purchase.data.data);
 
-    if (purchase) {
-      attachments = await db.attachment.findMany({
-        where: {
-          courseId: courseId
-        }
-      });
+    if (purchase.data.data) {
+      attachments = await axios.get(
+        `${process.env.API_URL}api/v1/attachments?courseId=${courseId}`
+      );
+    }
+    // console.log(attachments?.data.data);
+
+    if (chapter.data.data.data.isFree || purchase.data.data) {
+      muxData = chapter.data.data.data.muxData;
+
+      nextChapter = await axios.get(
+        `${process.env.API_URL}api/v1/chapters?position=${
+          chapter.data.data.data.position + 1
+        }&courseId=${courseId}&isPublished=true`
+      );
     }
 
-    if (chapter.isFree || purchase) {
-      muxData = await db.muxData.findUnique({
-        where: {
-          chapterId: chapterId,
-        }
-      });
+    const userProgress = await axios.get(
+      `${process.env.API_URL}api/v1/progress?userId=${userId}&chapterId=${chapterId}`
+    );
 
-      nextChapter = await db.chapter.findFirst({
-        where: {
-          courseId: courseId,
-          isPublished: true,
-          position: {
-            gt: chapter?.position,
-          }
-        },
-        orderBy: {
-          position: "asc",
-        }
-      });
-    }
-
-    const userProgress = await db.userProgress.findUnique({
-      where: {
-        userId_chapterId: {
-          userId,
-          chapterId,
-        }
-      }
-    });
+    const chapterData = chapter.data.data.data;
+    const courseData = course.data.data.data;
+    const attachmentsData = attachments?.data.data;
+    const nextChapterData = nextChapter?.data.data[0];
+    const userProgressData = userProgress?.data.data[0];
+    const purchaseData = purchase?.data.data[0];
 
     return {
-      chapter,
-      course,
+      chapterData,
+      courseData,
       muxData,
-      attachments,
-      nextChapter,
-      userProgress,
-      purchase,
+      attachmentsData,
+      nextChapterData,
+      userProgressData,
+      purchaseData,
     };
   } catch (error) {
     console.log("[GET_CHAPTER]", error);
     return {
-      chapter: null,
-      course: null,
+      chapterData: null,
+      courseData: null,
       muxData: null,
-      attachments: [],
-      nextChapter: null,
-      userProgress: null,
-      purchase: null,
-    }
+      attachmentsData: [],
+      nextChapterData: null,
+      userProgressData: null,
+      purchaseData: null,
+    };
   }
-}
+};

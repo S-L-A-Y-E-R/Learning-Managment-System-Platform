@@ -1,19 +1,22 @@
-import { db } from "@/lib/db";
-import { Course, Purchase } from "@prisma/client";
+import axios from "axios";
 
-type PurchaseWithCourse = Purchase & {
-  course: Course;
-};
+const groupByCourse = async (purchases: any[]) => {
+  const courses = await Promise.all(
+    purchases.map((purchase) => {
+      return axios.get(
+        `${process.env.API_URL}api/v1/courses/${purchase.courseId}`
+      );
+    })
+  );
 
-const groupByCourse = (purchases: PurchaseWithCourse[]) => {
   const grouped: { [courseTitle: string]: number } = {};
-  
-  purchases.forEach((purchase) => {
-    const courseTitle = purchase.course.title;
+
+  courses.forEach((course) => {
+    const courseTitle = course.data.data.data.title;
     if (!grouped[courseTitle]) {
       grouped[courseTitle] = 0;
     }
-    grouped[courseTitle] += purchase.course.price!;
+    grouped[courseTitle] += course.data.data.data.price!;
   });
 
   return grouped;
@@ -21,37 +24,32 @@ const groupByCourse = (purchases: PurchaseWithCourse[]) => {
 
 export const getAnalytics = async (userId: string) => {
   try {
-    const purchases = await db.purchase.findMany({
-      where: {
-        course: {
-          userId: userId
-        }
-      },
-      include: {
-        course: true,
-      }
-    });
+    const { data: purchases } = await axios.get(
+      `${process.env.API_URL}api/v1/purchase?userId=${userId}`
+    );
 
-    const groupedEarnings = groupByCourse(purchases);
-    const data = Object.entries(groupedEarnings).map(([courseTitle, total]) => ({
-      name: courseTitle,
-      total: total,
-    }));
+    const groupedEarnings = await groupByCourse(purchases.data);
+    const data = Object.entries(groupedEarnings).map(
+      ([courseTitle, total]) => ({
+        name: courseTitle,
+        total: total,
+      })
+    );
 
     const totalRevenue = data.reduce((acc, curr) => acc + curr.total, 0);
-    const totalSales = purchases.length;
+    const totalSales = purchases.results;
 
     return {
       data,
       totalRevenue,
       totalSales,
-    }
+    };
   } catch (error) {
     console.log("[GET_ANALYTICS]", error);
     return {
       data: [],
       totalRevenue: 0,
       totalSales: 0,
-    }
+    };
   }
-}
+};

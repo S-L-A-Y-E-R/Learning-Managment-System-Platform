@@ -1,58 +1,43 @@
-import { Category, Chapter, Course } from "@prisma/client";
+import axios from "axios";
 
-import { db } from "@/lib/db";
 import { getProgress } from "@/actions/get-progress";
 
-type CourseWithProgressWithCategory = Course & {
-  category: Category;
-  chapters: Chapter[];
-  progress: number | null;
-};
-
-type DashboardCourses = {
-  completedCourses: CourseWithProgressWithCategory[];
-  coursesInProgress: CourseWithProgressWithCategory[];
-}
-
-export const getDashboardCourses = async (userId: string): Promise<DashboardCourses> => {
+export const getDashboardCourses = async (userId: string): Promise<any> => {
   try {
-    const purchasedCourses = await db.purchase.findMany({
-      where: {
-        userId: userId,
-      },
-      select: {
-        course: {
-          include: {
-            category: true,
-            chapters: {
-              where: {
-                isPublished: true,
-              }
-            }
-          }
-        }
-      }
-    });
+    const { data: purchasedCourses } = await axios.get(
+      `${process.env.API_URL}api/v1/purchase?userId=${userId}`
+    );
 
-    const courses = purchasedCourses.map((purchase) => purchase.course) as CourseWithProgressWithCategory[];
+    const courses = await Promise.all(
+      purchasedCourses.data.map(async (course: any) => {
+        const { data: courseData } = await axios.get(
+          `${process.env.API_URL}api/v1/courses/${course.courseId}`
+        );
+        return courseData;
+      })
+    );
 
     for (let course of courses) {
-      const progress = await getProgress(userId, course.id);
+      const progress = await getProgress(userId, course.data.data._id);
       course["progress"] = progress;
     }
 
-    const completedCourses = courses.filter((course) => course.progress === 100);
-    const coursesInProgress = courses.filter((course) => (course.progress ?? 0) < 100);
+    const completedCourses = courses.filter(
+      (course) => course.data.data.progress === 100
+    );
+    const coursesInProgress = courses.filter(
+      (course) => (course.data.data.progress ?? 0) < 100
+    );
 
     return {
       completedCourses,
       coursesInProgress,
-    }
+    };
   } catch (error) {
     console.log("[GET_DASHBOARD_COURSES]", error);
     return {
       completedCourses: [],
       coursesInProgress: [],
-    }
+    };
   }
-}
+};
